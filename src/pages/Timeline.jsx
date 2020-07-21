@@ -14,23 +14,24 @@ export default function Timeline() {
     setTweets(response.data);
   };
 
-  
- 
-useEffect(() => {
+  useEffect(() => {
     getData();
-    const subscribeToEvents = () => {
-        const io = socket("http://localhost:3000");
-    
-        io.on("tweet", (data) => {
-          setTweets([...tweets, data]);
-        });
-        io.on("like", (data) => {
-          setTweets(tweets.map((tweet) => (tweet._id === data._id ? data : tweet)));
-        });
-    };
-    
+
     subscribeToEvents();
-}, [tweets]);
+  }, []);
+
+  const subscribeToEvents = () => {
+    const io = socket("http://localhost:3000");
+
+    io.on("tweet", (data) => {
+      setTweets([data, ...tweets]);
+      getData()
+    });
+    io.on("like", (data) => {
+      setTweets(tweets.map((tweet) => (tweet._id === data._id ? data : tweet)));
+      getData()
+    });
+  };
 
   const handleInputChange = (e) => {
     setNewTweet(e.target.value);
